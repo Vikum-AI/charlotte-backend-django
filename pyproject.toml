@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "verity-backend-django"
+version = "0.1.0"
+description = ""
+authors = ["Vikum Dabare <vikumdabare@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+django = "^6.0.6"
+djangorestframework = "^3.17.1"
+gunicorn = "^26.0.0"
+python-dotenv = "^1.2.2"
+kagglehub = "^1.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
