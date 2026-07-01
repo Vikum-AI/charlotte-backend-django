@@ -12,7 +12,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
+from redis import ConnectionPool
+
+load_dotenv('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +37,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_dramatiq',
+    'django_neomodel',
+    'api.core',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -80,6 +87,62 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Dramatiq
+DRAMATIQ_BROKER = {
+    'BROKER': 'dramatiq.brokers.redis.RedisBroker',
+    'OPTIONS': {
+        'url': 'redis://{host}:{port}/0'.format(
+            host=os.environ.get('DRAMATIQ_REDIS_HOST', default='localhost'),
+            port=os.environ.get('DRAMATIQ_REDIS_PORT', default=6379),
+        ),
+    },
+    'MIDDLEWARE': [
+        'dramatiq.middleware.Callbacks',
+        'dramatiq.middleware.Retries',
+        'django_dramatiq.middleware.DbConnectionsMiddleware',
+        'django_dramatiq.middleware.AdminMiddleware',
+    ],
+}
+
+DRAMATIQ_RESULT_BACKEND = {
+    'BACKEND': 'dramatiq.results.backends.redis.RedisBackend',
+    'BACKEND_OPTIONS': {
+        'url': 'redis://{host}:{port}/1'.format(
+            host=os.environ.get('DRAMATIQ_REDIS_HOST', default='localhost'),
+            port=os.environ.get('DRAMATIQ_REDIS_PORT', default=6379),
+        ),
+    },
+    'MIDDLEWARE_OPTIONS': {
+        'result_ttl': 60000,
+    },
+}
+
+REDIS_CONNECTION_POOL = ConnectionPool.from_url(
+    DRAMATIQ_BROKER['OPTIONS']['url'], decode_responses=True)
+
+DRAMATIQ_AUTODISCOVER_MODULES = [
+    'tasks',
+]
+
+DRAMATIQ_QUEUES = ['default']
+
+NEO4J_SCHEME = os.environ.get('NEO4J_SCHEME', 'bolt')
+NEO4J_HOST = os.environ.get('NEO4J_HOST', 'localhost')
+NEO4J_PORT = os.environ.get('NEO4J_PORT', '')
+NEO4J_USER = os.environ.get('NEO4J_USER', 'neo4j')
+NEO4J_PASSWORD = os.environ.get('NEO4J_PASSWORD', 'neo4j')
+
+_neo4j_host = NEO4J_HOST if not NEO4J_PORT else f'{NEO4J_HOST}:{NEO4J_PORT}'
+
+NEOMODEL_NEO4J_BOLT_URL = os.environ.get(
+    'NEO4J_BOLT_URL',
+    f'{NEO4J_SCHEME}://{NEO4J_USER}:{NEO4J_PASSWORD}@{_neo4j_host}',
+)
+NEOMODEL_SIGNALS = True
+NEOMODEL_FORCE_TIMEZONE = False
+NEOMODEL_MAX_CONNECTION_POOL_SIZE = int(
+    os.environ.get('NEOMODEL_MAX_CONNECTION_POOL_SIZE', '50'))
 
 
 # Password validation

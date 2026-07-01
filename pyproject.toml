@@ -12,6 +12,9 @@ djangorestframework = "^3.17.1"
 gunicorn = "^26.0.0"
 python-dotenv = "^1.2.2"
 kagglehub = "^1.0.2"
+django-dramatiq = "^0.15.0"
+dramatiq = { version = "^1.18.0", extras = ["redis"] }
+django-neomodel = "^0.2.0"
 
 
 [build-system]

@@ -195,6 +195,42 @@ argon2 = ["argon2-cffi (>=23.1.0)"]
 bcrypt = ["bcrypt (>=4.1.1)"]
 
 [[package]]
+name = "django-dramatiq"
+version = "0.15.0"
+description = "A Django app for Dramatiq."
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "django_dramatiq-0.15.0-py3-none-any.whl", hash = "sha256:23f0bc418a860952adbf822c4aa3b9c46c51d3d9f50be0a8ed3d19a53380df1d"},
+    {file = "django_dramatiq-0.15.0.tar.gz", hash = "sha256:e3cf1b2ac288fe4a7aa198c9450fe242ed312df8850f3f9e18ce01b8acc78b96"},
+]
+
+[package.dependencies]
+django = ">=4.2"
+dramatiq = ">=1.11"
+
+[package.extras]
+dev = ["flake8", "flake8-quotes", "isort", "pytest", "pytest-cov", "pytest-django", "twine"]
+
+[[package]]
+name = "django-neomodel"
+version = "0.2.0"
+description = "Use Neo4j with Django!"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_neomodel-0.2.0-py3-none-any.whl", hash = "sha256:0a1aab1bcf9f8882af6bae785e7cb8296db14e956de547857a9cbf3347230646"},
+    {file = "django_neomodel-0.2.0.tar.gz", hash = "sha256:8b4fb95924df227b323937ea7991337f7385739df5e0fbda820e0da0f4fa119a"},
+]
+
+[package.dependencies]
+django = ">=4.2.8"
+neomodel = ">=5.3.0,<5.4.0"
+
+[package.extras]
+dev = ["pytest (>=7.1)", "pytest-cov (>=4.0)", "pytest-django (>=4.5.2)"]
+
+[[package]]
 name = "djangorestframework"
 version = "3.17.1"
 description = "Web APIs for Django, made easy."
@@ -207,6 +243,30 @@ files = [
 
 [package.dependencies]
 django = ">=4.2"
+
+[[package]]
+name = "dramatiq"
+version = "1.18.0"
+description = "Background Processing for Python 3."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "dramatiq-1.18.0-py3-none-any.whl", hash = "sha256:d360f608aa3cd06f5db714bfcd23825dc7098bacfee52aca536b0bb0faae3c69"},
+    {file = "dramatiq-1.18.0.tar.gz", hash = "sha256:5ea436b6e50dae64d4de04f1eb519ad239a6b1ba6315ba1dce1c0c4c1ebedfaf"},
+]
+
+[package.dependencies]
+prometheus-client = ">=0.2"
+redis = {version = ">=2.0,<7.0", optional = true, markers = "extra == \"redis\""}
+
+[package.extras]
+all = ["gevent (>=1.1)", "pika (>=1.0,<2.0)", "pylibmc (>=1.5,<2.0)", "redis (>=2.0,<7.0)", "watchdog (>=4.0)", "watchdog_gevent (>=0.2)"]
+dev = ["alabaster", "bumpversion", "flake8", "flake8-bugbear", "flake8-quotes", "gevent (>=1.1)", "hiredis", "isort", "mypy", "pika (>=1.0,<2.0)", "pylibmc (>=1.5,<2.0)", "pytest", "pytest-benchmark[histogram]", "pytest-cov", "redis (>=2.0,<7.0)", "sphinx", "sphinxcontrib-napoleon", "tox", "twine", "watchdog (>=4.0)", "watchdog_gevent (>=0.2)", "wheel"]
+gevent = ["gevent (>=1.1)"]
+memcached = ["pylibmc (>=1.5,<2.0)"]
+rabbitmq = ["pika (>=1.0,<2.0)"]
+redis = ["redis (>=2.0,<7.0)"]
+watch = ["watchdog (>=4.0)", "watchdog_gevent (>=0.2)"]
 
 [[package]]
 name = "gunicorn"
@@ -284,6 +344,43 @@ protobuf = "*"
 requests = "*"
 
 [[package]]
+name = "neo4j"
+version = "5.19.0"
+description = "Neo4j Bolt driver for Python"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "neo4j-5.19.0.tar.gz", hash = "sha256:23704f604214174f3b7d15a38653a1462809986019dfdaf773ff7ca4e1b9e2de"},
+]
+
+[package.dependencies]
+pytz = "*"
+
+[package.extras]
+numpy = ["numpy (>=1.7.0,<2.0.0)"]
+pandas = ["numpy (>=1.7.0,<2.0.0)", "pandas (>=1.1.0,<3.0.0)"]
+pyarrow = ["pyarrow (>=1.0.0)"]
+
+[[package]]
+name = "neomodel"
+version = "5.3.3"
+description = "An object mapper for the neo4j graph database."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "neomodel-5.3.3-py3-none-any.whl", hash = "sha256:ae1ffc9ac2a50a966a17504e90e9371ae2abc5d21faf07680a07e5657b5c34ab"},
+    {file = "neomodel-5.3.3.tar.gz", hash = "sha256:f8e24fbce5d1ccd1966b3bed65ac469243e9b4f14b7e6f11e80d2c9fce450d95"},
+]
+
+[package.dependencies]
+neo4j = ">=5.19.0,<5.20.0"
+
+[package.extras]
+dev = ["Shapely (>=2.0.0)", "black", "isort", "pre-commit", "pytest (>=7.1)", "pytest-asyncio", "pytest-cov (>=4.0)", "unasync"]
+numpy = ["numpy"]
+pandas = ["pandas"]
+
+[[package]]
 name = "packaging"
 version = "26.2"
 description = "Core utilities for Python packages"
@@ -293,6 +390,22 @@ files = [
     {file = "packaging-26.2-py3-none-any.whl", hash = "sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e"},
     {file = "packaging-26.2.tar.gz", hash = "sha256:ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661"},
 ]
+
+[[package]]
+name = "prometheus-client"
+version = "0.25.0"
+description = "Python client for the Prometheus monitoring system."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "prometheus_client-0.25.0-py3-none-any.whl", hash = "sha256:d5aec89e349a6ec230805d0df882f3807f74fd6c1a2fa86864e3c2279059fed1"},
+    {file = "prometheus_client-0.25.0.tar.gz", hash = "sha256:5e373b75c31afb3c86f1a52fa1ad470c9aace18082d39ec0d2f918d11cc9ba28"},
+]
+
+[package.extras]
+aiohttp = ["aiohttp"]
+django = ["django"]
+twisted = ["twisted"]
 
 [[package]]
 name = "protobuf"
@@ -324,6 +437,17 @@ files = [
 
 [package.extras]
 cli = ["click (>=5.0)"]
+
+[[package]]
+name = "pytz"
+version = "2026.2"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2026.2-py2.py3-none-any.whl", hash = "sha256:04156e608bee23d3792fd45c94ae47fae1036688e75032eea2e3bf0323d1f126"},
+    {file = "pytz-2026.2.tar.gz", hash = "sha256:0e60b47b29f21574376f218fe21abc009894a2321ea16c6754f3cad6eb7cdd6a"},
+]
 
 [[package]]
 name = "pyyaml"
@@ -406,6 +530,22 @@ files = [
     {file = "pyyaml-6.0.3-cp39-cp39-win_amd64.whl", hash = "sha256:2e71d11abed7344e42a8849600193d15b6def118602c4c176f748e4583246007"},
     {file = "pyyaml-6.0.3.tar.gz", hash = "sha256:d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f"},
 ]
+
+[[package]]
+name = "redis"
+version = "6.4.0"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "redis-6.4.0-py3-none-any.whl", hash = "sha256:f0544fa9604264e9464cdf4814e7d4830f74b165d52f2a330a760a88dd248b7f"},
+    {file = "redis-6.4.0.tar.gz", hash = "sha256:b01bc7282b8444e28ec36b261df5375183bb47a07eb9c603f284e89cbc5ef010"},
+]
+
+[package.extras]
+hiredis = ["hiredis (>=3.2.0)"]
+jwt = ["pyjwt (>=2.9.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (>=20.0.1)", "requests (>=2.31.0)"]
 
 [[package]]
 name = "requests"
@@ -494,4 +634,4 @@ zstd = ["backports-zstd (>=1.0.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "86531c91575a2360e52967b360ffb0cf35b72bf420b53e5b9e70634994abff07"
+content-hash = "68d6906631d0d1e1b7cf59292797565029d745494d608923fd63eff35e0f6b2a"
