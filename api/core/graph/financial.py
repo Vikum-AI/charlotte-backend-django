@@ -1,4 +1,5 @@
 from neomodel import (
+    ArrayProperty,
     DateTimeProperty,
     FloatProperty,
     RelationshipFrom,
@@ -47,6 +48,7 @@ class Transaction(ProofGraphNode):
     category = StringProperty()
     step = StringProperty()
     type = StringProperty()
+    synthetic_fields = ArrayProperty(StringProperty(), default=list)
 
     initiated_by_account = RelationshipFrom('Account', 'INITIATES')
     screened_by = RelationshipTo('AMLCheck', 'SCREENED_BY')
