@@ -1,98 +1,56 @@
-import csv
 from pathlib import Path
 
 from neomodel import db
 
-BATCH_SIZE = 1000
+from api.core.graph.repository import (
+    save_graph_enrichments,
+    save_graph_transactions,
+    save_graph_transfers,
+)
+from api.core.ingestion.transform import amlsim, banksim, transactions
 
 
-def load_dataset(name: str, path: Path):
+def wipe_graph_if_populated() -> bool:
+    results, _ = db.cypher_query(
+        'MATCH (n) RETURN count(n) AS count LIMIT 1',
+    )
+    count = results[0][0] if results else 0
+    if count == 0:
+        return False
+
+    db.clear_neo4j_database(clear_constraints=True, clear_indexes=True)
+    return True
+
+
+def _apply_limit(rows: list, limit: int | None) -> list:
+    if limit is None:
+        return rows
+    return rows[:limit]
+
+
+def load_dataset(name: str, path: Path, limit: int | None = None):
     loaders = {
-        'transactions': load_transactions,
-        'banksim': load_banksim,
-        'amlsim': load_amlsim,
+        'transactions': _load_transactions,
+        'banksim': _load_banksim,
+        'amlsim': _load_amlsim,
     }
     loader = loaders.get(name)
     if loader is None:
         raise ValueError(f'Unknown dataset: {name}')
-    loader(path)
+    loader(path, limit)
 
 
-def load_transactions(path: Path):
-    records = _read_csv_records(
-        path,
-        rename={
-            'transactionid': 'transaction_id',
-            'customerid': 'customer_id',
-            'amount': 'amount',
-            'currency': 'currency',
-            'timestamp': 'timestamp',
-        },
-    )
-
-    query = """
-    UNWIND $rows AS row
-
-    MERGE (c:Customer {customer_id: row.customer_id})
-
-    MERGE (t:Transaction {transaction_id: row.transaction_id})
-    SET t.amount = row.amount,
-        t.currency = row.currency,
-        t.timestamp = row.timestamp
-
-    MERGE (c)-[:INITIATES]->(t)
-    """
-    run_batch(query, records, 'transactions')
+def _load_transactions(path: Path, limit: int | None):
+    save_graph_transactions(
+        _apply_limit(transactions.transform(path), limit))
 
 
-def load_banksim(path: Path):
-    records = _read_csv_records(path)
-
-    query = """
-    UNWIND $rows AS row
-
-    MATCH (t:Transaction {transaction_id: row.transactionid})
-
-    SET t.category = row.category,
-        t.step = row.step,
-        t.type = row.type
-    """
-    run_batch(query, records, 'banksim')
+def _load_banksim(path: Path, limit: int | None):
+    save_graph_transactions(
+        _apply_limit(banksim.transform_transactions(path), limit))
+    save_graph_enrichments(
+        _apply_limit(banksim.transform_enrichments(path), limit))
 
 
-def load_amlsim(path: Path):
-    records = _read_csv_records(path)
-
-    query = """
-    UNWIND $rows AS row
-
-    MERGE (a:Account {account_id: row.account})
-    MERGE (b:Account {account_id: row.target})
-
-    MERGE (a)-[r:TRANSFER]->(b)
-    SET r.amount = row.amount,
-        r.timestamp = row.timestamp
-    """
-    run_batch(query, records, 'amlsim')
-
-
-def _read_csv_records(path: Path, rename: dict | None = None) -> list[dict]:
-    csv_file = next(path.glob('*.csv'))
-    with csv_file.open(newline='', encoding='utf-8') as handle:
-        records = []
-        for row in csv.DictReader(handle):
-            record = {}
-            for column, value in row.items():
-                key = column.lower()
-                if rename and key in rename:
-                    key = rename[key]
-                record[key] = '' if value in (None, '') else value
-            records.append(record)
-        return records
-
-
-def run_batch(query: str, records: list, label: str):
-    for i in range(0, len(records), BATCH_SIZE):
-        db.cypher_query(query, {'rows': records[i:i + BATCH_SIZE]})
-
-    print(f'Loaded {label}: {len(records)} records')
+def _load_amlsim(path: Path, limit: int | None):
+    save_graph_transfers(_apply_limit(amlsim.transform(path), limit))

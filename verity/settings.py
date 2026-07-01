@@ -88,7 +88,6 @@ DATABASES = {
     }
 }
 
-# Dramatiq
 DRAMATIQ_BROKER = {
     'BROKER': 'dramatiq.brokers.redis.RedisBroker',
     'OPTIONS': {
@@ -196,3 +195,8 @@ PRELOADED_DATASETS = [
         "kaggle": "ealaxi/banksim1",
     },
 ]
+
+_seed_prod_limit = os.environ.get('SEED_PROD_LIMIT', '')
+SEED_PROD_LIMIT = int(_seed_prod_limit) if _seed_prod_limit else None
+
+SEED_DEV_LIMIT = int(os.environ.get('SEED_DEV_LIMIT', '500'))
