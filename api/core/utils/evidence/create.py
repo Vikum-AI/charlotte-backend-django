@@ -1,15 +1,15 @@
 from django.utils import timezone
 
-from api.core.evidence.exceptions import EvidenceCreationError
-from api.core.evidence.resolvers import (
+from api.core.graph.models.financial import Transaction
+from api.core.graph.models.investigation import Evidence
+from api.core.utils.evidence.exceptions import EvidenceCreationError
+from api.core.utils.evidence.resolvers import (
     MATCHED,
     MISMATCH,
     resolve_approval,
     resolve_custom,
     resolve_kyc_status,
 )
-from api.core.graph.investigation import Evidence
-from api.core.graph.financial import Transaction
 
 
 def create_approval_evidence(

@@ -7,7 +7,7 @@ from neomodel import (
     StringProperty,
 )
 
-from api.core.graph.base import ProofGraphNode
+from api.core.graph.models.base import ProofGraphNode
 
 
 class Employee(ProofGraphNode):
@@ -26,8 +26,8 @@ class Approval(ProofGraphNode):
     method = StringProperty()
 
     approver = RelationshipFrom('Employee', 'APPROVES')
-    for_transaction = RelationshipTo('Transaction', 'FOR')
-    supported_by = RelationshipFrom('Evidence', 'SUPPORTS')
+    for_transaction = RelationshipTo('api.core.graph.models.financial.Transaction', 'FOR')
+    supported_by = RelationshipFrom('api.core.graph.models.investigation.Evidence', 'SUPPORTS')
 
 
 class AMLCheck(ProofGraphNode):
@@ -37,8 +37,8 @@ class AMLCheck(ProofGraphNode):
     confidence = FloatProperty()
     timestamp = DateTimeProperty()
 
-    screens = RelationshipFrom('Transaction', 'SCREENED_BY')
-    supported_by = RelationshipFrom('Evidence', 'SUPPORTS')
+    screens = RelationshipFrom('api.core.graph.models.financial.Transaction', 'SCREENED_BY')
+    supported_by = RelationshipFrom('api.core.graph.models.investigation.Evidence', 'SUPPORTS')
 
 
 class Country(ProofGraphNode):
@@ -46,6 +46,6 @@ class Country(ProofGraphNode):
     risk_level = StringProperty()
     sanctions_flag = BooleanProperty(default=False)
 
-    customers = RelationshipFrom('Customer', 'LOCATED_IN')
+    customers = RelationshipFrom('api.core.graph.models.financial.Customer', 'LOCATED_IN')
     destination_transactions = RelationshipFrom(
-        'Transaction', 'DESTINATION_COUNTRY')
+        'api.core.graph.models.financial.Transaction', 'DESTINATION_COUNTRY')

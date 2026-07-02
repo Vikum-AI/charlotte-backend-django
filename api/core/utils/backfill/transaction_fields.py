@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from neomodel import db
 
-from api.core.backfill.derivations import BACKFILL_FIELDS, DERIVE_BY_FIELD
+from api.core.utils.backfill.derivations import BACKFILL_FIELDS, DERIVE_BY_FIELD
 
 DEFAULT_BATCH_SIZE = 500
 

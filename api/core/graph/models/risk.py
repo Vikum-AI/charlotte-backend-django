@@ -5,7 +5,7 @@ from neomodel import (
     StringProperty,
 )
 
-from api.core.graph.base import ProofGraphNode
+from api.core.graph.models.base import ProofGraphNode
 
 
 class RiskSignal(ProofGraphNode):
@@ -15,9 +15,9 @@ class RiskSignal(ProofGraphNode):
     velocity_score = FloatProperty()
     baseline_deviation = FloatProperty()
 
-    transaction = RelationshipFrom('Transaction', 'HAS_RISK_SIGNAL')
-    customer = RelationshipFrom('Customer', 'HAS_RISK_SIGNAL')
-    case = RelationshipFrom('Case', 'HAS_RISK_SIGNAL')
+    transaction = RelationshipFrom('api.core.graph.models.financial.Transaction', 'HAS_RISK_SIGNAL')
+    customer = RelationshipFrom('api.core.graph.models.financial.Customer', 'HAS_RISK_SIGNAL')
+    case = RelationshipFrom('api.core.graph.models.investigation.Case', 'HAS_RISK_SIGNAL')
 
 
 class CustomerBehaviourProfile(ProofGraphNode):
@@ -27,4 +27,4 @@ class CustomerBehaviourProfile(ProofGraphNode):
     transactions_30d = IntegerProperty()
     country_diversity_score = FloatProperty()
 
-    customer = RelationshipFrom('Customer', 'HAS_PROFILE')
+    customer = RelationshipFrom('api.core.graph.models.financial.Customer', 'HAS_PROFILE')

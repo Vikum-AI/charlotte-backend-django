@@ -1,6 +1,6 @@
 from neomodel import db
 
-from api.core.evidence.results import ResolutionResult
+from api.core.utils.evidence.results import ResolutionResult
 from api.user_management.models import User, UserRole
 
 MATCHED = 'MATCHED'

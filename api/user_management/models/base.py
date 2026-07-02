@@ -1,5 +1,6 @@
 import uuid
 
+from crum import get_current_user
 from django.conf import settings
 from django.db import models
 
@@ -31,3 +32,11 @@ class CreatedByModelMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        user = get_current_user()
+        if user is not None and getattr(user, 'is_authenticated', False):
+            if self._state.adding and self.created_by_id is None:
+                self.created_by = user
+            self.updated_by = user
+        super().save(*args, **kwargs)

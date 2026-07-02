@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from api.core.utils.backfill_customer_attributes import backfill_customer_attributes
+from api.core.utils.backfill.customer_attributes import backfill_customer_attributes
 
 
 class Command(BaseCommand):

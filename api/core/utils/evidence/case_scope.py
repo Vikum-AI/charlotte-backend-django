@@ -1,4 +1,4 @@
-from api.core.evidence.models import CaseEvidence
+from api.core.models import CaseEvidence
 
 
 def attach_evidence(case_id: str, evidence_id: str) -> None:

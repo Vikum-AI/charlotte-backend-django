@@ -7,7 +7,7 @@ from neomodel import (
     StringProperty,
 )
 
-from api.core.graph.base import ProofGraphNode
+from api.core.graph.models.base import ProofGraphNode
 
 
 class Customer(ProofGraphNode):
@@ -18,10 +18,11 @@ class Customer(ProofGraphNode):
     industry = StringProperty()
 
     accounts = RelationshipTo('Account', 'OWNS')
-    located_in = RelationshipTo('Country', 'LOCATED_IN')
+    located_in = RelationshipTo('api.core.graph.models.compliance.Country', 'LOCATED_IN')
     behaviour_profile = RelationshipTo(
-        'CustomerBehaviourProfile', 'HAS_PROFILE')
-    risk_signals = RelationshipTo('RiskSignal', 'HAS_RISK_SIGNAL')
+        'api.core.graph.models.risk.CustomerBehaviourProfile', 'HAS_PROFILE')
+    risk_signals = RelationshipTo(
+        'api.core.graph.models.risk.RiskSignal', 'HAS_RISK_SIGNAL')
 
 
 class Account(ProofGraphNode):
@@ -51,9 +52,11 @@ class Transaction(ProofGraphNode):
     synthetic_fields = ArrayProperty(StringProperty(), default=list)
 
     initiated_by_account = RelationshipFrom('Account', 'INITIATES')
-    screened_by = RelationshipTo('AMLCheck', 'SCREENED_BY')
-    destination_country = RelationshipTo('Country', 'DESTINATION_COUNTRY')
-    risk_signals = RelationshipTo('RiskSignal', 'HAS_RISK_SIGNAL')
-    approvals = RelationshipFrom('Approval', 'FOR')
-    investigated_by = RelationshipFrom('Case', 'INVESTIGATES')
-    supported_by = RelationshipFrom('Evidence', 'SUPPORTS')
+    screened_by = RelationshipTo('api.core.graph.models.compliance.AMLCheck', 'SCREENED_BY')
+    destination_country = RelationshipTo(
+        'api.core.graph.models.compliance.Country', 'DESTINATION_COUNTRY')
+    risk_signals = RelationshipTo(
+        'api.core.graph.models.risk.RiskSignal', 'HAS_RISK_SIGNAL')
+    approvals = RelationshipFrom('api.core.graph.models.compliance.Approval', 'FOR')
+    investigated_by = RelationshipFrom('api.core.graph.models.investigation.Case', 'INVESTIGATES')
+    supported_by = RelationshipFrom('api.core.graph.models.investigation.Evidence', 'SUPPORTS')

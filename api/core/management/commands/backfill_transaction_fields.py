@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from api.core.backfill.derivations import BACKFILL_FIELDS
-from api.core.utils.backfill_transaction_fields import (
+from api.core.utils.backfill.derivations import BACKFILL_FIELDS
+from api.core.utils.backfill.transaction_fields import (
     DEFAULT_BATCH_SIZE,
     backfill_transaction_fields,
     dry_run_missing_counts,

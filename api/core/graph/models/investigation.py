@@ -7,7 +7,7 @@ from neomodel import (
     StringProperty,
 )
 
-from api.core.graph.base import ProofGraphNode
+from api.core.graph.models.base import ProofGraphNode
 
 
 class Case(ProofGraphNode):
@@ -15,10 +15,10 @@ class Case(ProofGraphNode):
     status = StringProperty()
     created_at = DateTimeProperty()
 
-    investigates = RelationshipTo('Transaction', 'INVESTIGATES')
+    investigates = RelationshipTo('api.core.graph.models.financial.Transaction', 'INVESTIGATES')
     evidence = RelationshipTo('Evidence', 'HAS_EVIDENCE')
     evaluations = RelationshipTo('RuleEvaluation', 'HAS_EVALUATION')
-    risk_signals = RelationshipTo('RiskSignal', 'HAS_RISK_SIGNAL')
+    risk_signals = RelationshipTo('api.core.graph.models.risk.RiskSignal', 'HAS_RISK_SIGNAL')
     supported_by = RelationshipFrom('Evidence', 'SUPPORTS')
 
 
@@ -38,9 +38,9 @@ class Evidence(ProofGraphNode):
     payload = JSONProperty()
 
     case = RelationshipFrom('Case', 'HAS_EVIDENCE')
-    supports = RelationshipTo('Transaction', 'SUPPORTS')
-    supports_approval = RelationshipTo('Approval', 'SUPPORTS')
-    supports_aml_check = RelationshipTo('AMLCheck', 'SUPPORTS')
+    supports = RelationshipTo('api.core.graph.models.financial.Transaction', 'SUPPORTS')
+    supports_approval = RelationshipTo('api.core.graph.models.compliance.Approval', 'SUPPORTS')
+    supports_aml_check = RelationshipTo('api.core.graph.models.compliance.AMLCheck', 'SUPPORTS')
     supports_case = RelationshipTo('Case', 'SUPPORTS')
 
 

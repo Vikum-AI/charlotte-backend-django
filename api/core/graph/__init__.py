@@ -1,7 +1,18 @@
-from api.core.graph.compliance import AMLCheck, Approval, Country, Employee
-from api.core.graph.financial import Account, Customer, Transaction
-from api.core.graph.investigation import Case, Evidence, Rule, RuleEvaluation
-from api.core.graph.risk import CustomerBehaviourProfile, RiskSignal
+from api.core.graph.models import (  # noqa: F401
+    Account,
+    AMLCheck,
+    Approval,
+    Case,
+    Country,
+    Customer,
+    CustomerBehaviourProfile,
+    Employee,
+    Evidence,
+    RiskSignal,
+    Rule,
+    RuleEvaluation,
+    Transaction,
+)
 
 __all__ = [
     'Account',
