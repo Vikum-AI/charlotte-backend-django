@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_dramatiq',
     'django_neomodel',
     'api.core',
+    'api.user_management',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,6 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+AUTH_USER_MODEL = 'user_management.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
