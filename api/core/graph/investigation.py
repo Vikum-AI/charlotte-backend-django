@@ -1,6 +1,7 @@
 from neomodel import (
     DateTimeProperty,
     FloatProperty,
+    JSONProperty,
     RelationshipFrom,
     RelationshipTo,
     StringProperty,
@@ -23,13 +24,21 @@ class Case(ProofGraphNode):
 
 class Evidence(ProofGraphNode):
     evidence_id = StringProperty(unique_index=True, required=True)
-    type = StringProperty()
-    source = StringProperty()
-    extracted_text = StringProperty()
-    timestamp = DateTimeProperty()
+    evidence_type = StringProperty(required=True)
+    extracted_at = DateTimeProperty()
+    confidence = FloatProperty()
+    source_document_id = StringProperty()
+    file_key = StringProperty()
+    source_text = StringProperty()
+    source_start_offset = FloatProperty()
+    source_end_offset = FloatProperty()
+    raw_extraction = JSONProperty()
+    resolved_status = StringProperty()
+    resolution_reason = StringProperty()
+    payload = JSONProperty()
 
     case = RelationshipFrom('Case', 'HAS_EVIDENCE')
-    supports_transaction = RelationshipTo('Transaction', 'SUPPORTS')
+    supports = RelationshipTo('Transaction', 'SUPPORTS')
     supports_approval = RelationshipTo('Approval', 'SUPPORTS')
     supports_aml_check = RelationshipTo('AMLCheck', 'SUPPORTS')
     supports_case = RelationshipTo('Case', 'SUPPORTS')

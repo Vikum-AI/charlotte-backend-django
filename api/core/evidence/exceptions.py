@@ -1,0 +1,2 @@
+class EvidenceCreationError(Exception):
+    pass
