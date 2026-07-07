@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse, urlunparse
 
 from dotenv import load_dotenv
 from redis import ConnectionPool
@@ -68,7 +69,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = os.environ.get(
-    'CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+    'CORS_ALLOWED_ORIGINS', 'http://localhost:3000,https://charlotte-risk.vercel.app').split(',')
 
 ROOT_URLCONF = 'charlotte.urls'
 
@@ -100,13 +101,34 @@ DATABASES = {
     }
 }
 
+
+def _redis_url(db: int) -> str:
+    base_url = os.environ.get('REDIS_URL') or os.environ.get('REDIS_PRIVATE_URL')
+    if base_url:
+        parsed = urlparse(base_url)
+        return urlunparse(parsed._replace(path=f'/{db}'))
+
+    host = os.environ.get('DRAMATIQ_REDIS_HOST', 'localhost')
+    port = os.environ.get('DRAMATIQ_REDIS_PORT', '6379')
+    user = os.environ.get('DRAMATIQ_REDIS_USER', '')
+    password = os.environ.get('DRAMATIQ_REDIS_PASSWORD', '')
+
+    if user and password:
+        auth = f'{user}:{password}@'
+    elif password:
+        auth = f':{password}@'
+    elif user:
+        auth = f'{user}@'
+    else:
+        auth = ''
+
+    return f'redis://{auth}{host}:{port}/{db}'
+
+
 DRAMATIQ_BROKER = {
     'BROKER': 'dramatiq.brokers.redis.RedisBroker',
     'OPTIONS': {
-        'url': 'redis://{host}:{port}/0'.format(
-            host=os.environ.get('DRAMATIQ_REDIS_HOST', default='localhost'),
-            port=os.environ.get('DRAMATIQ_REDIS_PORT', default=6379),
-        ),
+        'url': _redis_url(0),
     },
     'MIDDLEWARE': [
         'dramatiq.middleware.Callbacks',
@@ -119,10 +141,7 @@ DRAMATIQ_BROKER = {
 DRAMATIQ_RESULT_BACKEND = {
     'BACKEND': 'dramatiq.results.backends.redis.RedisBackend',
     'BACKEND_OPTIONS': {
-        'url': 'redis://{host}:{port}/1'.format(
-            host=os.environ.get('DRAMATIQ_REDIS_HOST', default='localhost'),
-            port=os.environ.get('DRAMATIQ_REDIS_PORT', default=6379),
-        ),
+        'url': _redis_url(1),
     },
     'MIDDLEWARE_OPTIONS': {
         'result_ttl': 60000,
