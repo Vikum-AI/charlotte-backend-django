@@ -1,6 +1,7 @@
 from neomodel import (
     ArrayProperty,
-    DateTimeProperty,
+    BooleanProperty,
+    DateTimeNeo4jFormatProperty,
     FloatProperty,
     RelationshipFrom,
     RelationshipTo,
@@ -41,9 +42,10 @@ class Account(ProofGraphNode):
 
 class Transaction(ProofGraphNode):
     transaction_id = StringProperty(unique_index=True, required=True)
+    is_demo_featured = BooleanProperty(default=False)
     amount = FloatProperty()
     currency = StringProperty()
-    timestamp = DateTimeProperty()
+    timestamp = DateTimeNeo4jFormatProperty()
     status = StringProperty()
     channel = StringProperty()
     category = StringProperty()

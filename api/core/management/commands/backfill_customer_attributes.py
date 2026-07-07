@@ -4,7 +4,7 @@ from api.core.utils.backfill.customer_attributes import backfill_customer_attrib
 
 
 class Command(BaseCommand):
-    help = 'Backfill synthetic kyc_status, risk_rating, and industry on Customer nodes'
+    help = 'Backfill risk_rating and industry on Customer nodes; clears legacy kyc tier values'
 
     def add_arguments(self, parser):
         parser.add_argument(

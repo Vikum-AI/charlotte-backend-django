@@ -14,17 +14,18 @@ WITH c ORDER BY c.customer_id LIMIT $batch_size
 RETURN c.customer_id AS customer_id
 """
 
+CLEAR_LEGACY_KYC_TIER_QUERY = """
+MATCH (c:Customer)
+WHERE c.kyc_status IN ['basic', 'standard', 'enhanced']
+SET c.kyc_status = null
+"""
+
 CUSTOMER_BACKFILL_QUERY = """
 UNWIND $rows AS row
 MATCH (c:Customer {customer_id: row.customer_id})
 OPTIONAL MATCH (c)-[:OWNS]->(a:Account)-[:INITIATES]->(t:Transaction)
 WITH c, count(t) AS tx_count, count(DISTINCT a) AS account_count, row.industry AS industry
-SET c.kyc_status = CASE
-      WHEN tx_count <= 2 THEN 'basic'
-      WHEN tx_count <= 9 THEN 'standard'
-      ELSE 'enhanced'
-    END,
-    c.risk_rating = CASE
+SET c.risk_rating = CASE
       WHEN tx_count > 10 OR account_count > 1 THEN 'high'
       WHEN tx_count >= 3 AND tx_count <= 10 THEN 'medium'
       ELSE 'low'
@@ -106,7 +107,13 @@ def _fetch_sample_customers() -> list[tuple[str, str, str, str]]:
     return [(row[0], row[1], row[2], row[3]) for row in results]
 
 
+def _clear_legacy_kyc_tier_values() -> None:
+    db.cypher_query(CLEAR_LEGACY_KYC_TIER_QUERY)
+
+
 def backfill_customer_attributes(limit: int | None = None) -> BackfillSummary:
+    _clear_legacy_kyc_tier_values()
+
     last_id = None
     total_processed = 0
     batch_index = 0

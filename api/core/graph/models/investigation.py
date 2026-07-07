@@ -24,6 +24,7 @@ class Case(ProofGraphNode):
 
 class Evidence(ProofGraphNode):
     evidence_id = StringProperty(unique_index=True, required=True)
+    case_id = StringProperty(required=True)
     evidence_type = StringProperty(required=True)
     extracted_at = DateTimeProperty()
     confidence = FloatProperty()
@@ -36,6 +37,8 @@ class Evidence(ProofGraphNode):
     resolved_status = StringProperty()
     resolution_reason = StringProperty()
     payload = JSONProperty()
+    confirmed_at = DateTimeProperty(default=None)
+    confirmed_by = StringProperty(default=None)
 
     case = RelationshipFrom('Case', 'HAS_EVIDENCE')
     supports = RelationshipTo('api.core.graph.models.financial.Transaction', 'SUPPORTS')

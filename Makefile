@@ -47,7 +47,7 @@ dev:
 	$(MANAGE) runserver $(DEV_PORT)
 
 run:
-	$(POETRY) run gunicorn verity.wsgi:application --bind 127.0.0.1:$(GUNICORN_PORT)
+	$(POETRY) run gunicorn charlotte.wsgi:application --bind 127.0.0.1:$(GUNICORN_PORT)
 
 shell:
 	@echo "Starting poetry shell. Press Ctrl-d to exit."
@@ -72,4 +72,4 @@ backfill-transactions-dry-run:
 	$(MANAGE) backfill_transaction_fields --dry-run
 
 startworker:
-	$(MANAGE) rundramatiq
+	$(MANAGE) rundramatiq --processes 1 --threads 1

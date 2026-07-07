@@ -1,0 +1,139 @@
+[
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_kyc_verified",
+    "fields": {
+      "label": "KYC status is verified",
+      "description": "Checks that the customer's KYC status has been confirmed.",
+      "tier": "customer",
+      "condition_type": "string_match",
+      "condition_fragment": {
+        "type": "string_match",
+        "field": "customer.kyc_status",
+        "op": "equals",
+        "value": "verified"
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_kyc_present",
+    "fields": {
+      "label": "KYC status is set",
+      "description": "Checks that a KYC status exists at all, regardless of value.",
+      "tier": "customer",
+      "condition_type": "presence",
+      "condition_fragment": {
+        "type": "presence",
+        "field": "customer.kyc_status"
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_amount_over_10k",
+    "fields": {
+      "label": "Amount over $10,000",
+      "description": "Flags transactions above the standard reporting threshold.",
+      "tier": "transaction",
+      "condition_type": "comparison",
+      "condition_fragment": {
+        "type": "comparison",
+        "field": "transaction.amount",
+        "op": "gt",
+        "value": 10000
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_two_admin_approvals",
+    "fields": {
+      "label": "At least 2 admin approvals",
+      "description": "Requires two or more approvals from users with the admin role.",
+      "tier": "transaction",
+      "condition_type": "count",
+      "condition_fragment": {
+        "type": "count",
+        "relationship": "approval",
+        "op": "gte",
+        "value": 2,
+        "filter": {
+          "role": "admin"
+        }
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_two_editor_approvals",
+    "fields": {
+      "label": "At least 2 editor approvals",
+      "description": "Requires two or more approvals from users with the editor role.",
+      "tier": "transaction",
+      "condition_type": "count",
+      "condition_fragment": {
+        "type": "count",
+        "relationship": "approval",
+        "op": "gte",
+        "value": 2,
+        "filter": {
+          "role": "editor"
+        }
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_any_approvals",
+    "fields": {
+      "label": "At least 2 approvals (any role)",
+      "description": "Requires two or more approvals regardless of approver role.",
+      "tier": "transaction",
+      "condition_type": "count",
+      "condition_fragment": {
+        "type": "count",
+        "relationship": "approval",
+        "op": "gte",
+        "value": 2
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedsubrule",
+    "pk": "sub_recent_transaction",
+    "fields": {
+      "label": "Occurred in the last 30 days",
+      "description": "Checks the transaction timestamp falls within the last month.",
+      "tier": "transaction",
+      "condition_type": "temporal",
+      "condition_fragment": {
+        "type": "temporal",
+        "field": "transaction.timestamp",
+        "op": "within_last",
+        "value": "30d"
+      },
+      "applicable_transaction_ids": [],
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  }
+]

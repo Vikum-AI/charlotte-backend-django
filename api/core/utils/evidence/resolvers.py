@@ -5,10 +5,15 @@ from api.user_management.models import User, UserRole
 
 MATCHED = 'MATCHED'
 MISMATCH = 'MISMATCH'
+PROVISIONAL = 'PROVISIONAL'
 UNRESOLVED = 'UNRESOLVED'
+
+KYC_VERIFICATION_STATUSES = frozenset({'verified', 'pending', 'rejected'})
+KYC_TIER_VALUES = frozenset({'basic', 'standard', 'enhanced'})
 
 TRANSACTION_PROPERTIES = frozenset({
     'amount', 'currency', 'status', 'channel', 'category', 'type', 'step',
+    'timestamp',
 })
 CUSTOMER_PROPERTIES = frozenset({
     'kyc_status', 'risk_rating', 'industry', 'name',
@@ -33,6 +38,13 @@ LIMIT 1
 DESTINATION_COUNTRY_QUERY = """
 MATCH (t:Transaction {transaction_id: $transaction_id})-[:DESTINATION_COUNTRY]->(co:Country)
 RETURN co.country_code AS value
+"""
+
+CUSTOMER_COUNTRY_QUERY = """
+MATCH (c:Customer)-[:OWNS]->(:Account)-[:INITIATES]->(t:Transaction {transaction_id: $transaction_id})
+MATCH (c)-[:LOCATED_IN]->(co:Country)
+RETURN co.country_code AS value
+LIMIT 1
 """
 
 
@@ -93,9 +105,10 @@ def resolve_kyc_status(
             reason='No KYC status extracted',
         )
 
-    graph_value = _fetch_customer_kyc_status(customer_id)
+    normalized_status = str(kyc_status_value).lower()
+    graph_value = _effective_kyc_graph_value(_fetch_customer_kyc_status(customer_id))
     payload = {
-        'kyc_status_value': kyc_status_value,
+        'kyc_status_value': normalized_status,
         'verification_date': verification_date,
         'customer_id': customer_id,
     }
@@ -103,7 +116,7 @@ def resolve_kyc_status(
     if graph_value is None:
         return ResolutionResult(status=MATCHED, resolved_payload=payload)
 
-    if str(graph_value).lower() != str(kyc_status_value).lower():
+    if graph_value != normalized_status:
         return ResolutionResult(
             status=MISMATCH,
             reason='Extracted value contradicts existing graph value',
@@ -125,6 +138,9 @@ def resolve_field_path(
 
     if field_path == 'transaction.destination_country':
         return _fetch_destination_country(transaction_id)
+
+    if field_path == 'customer.country':
+        return _fetch_customer_country(transaction_id)
 
     if '.' not in field_path:
         return None
@@ -162,7 +178,7 @@ def resolve_custom(
         payload['customer_id'] = customer_id
 
     if graph_value is None:
-        return ResolutionResult(status=MATCHED, resolved_payload=payload)
+        return ResolutionResult(status=PROVISIONAL, resolved_payload=payload)
 
     if str(graph_value).lower() != str(extracted_value).lower():
         return ResolutionResult(
@@ -174,11 +190,13 @@ def resolve_custom(
             },
         )
 
-    return ResolutionResult(status=MATCHED, resolved_payload=payload)
+    return ResolutionResult(status=PROVISIONAL, resolved_payload=payload)
 
 
 def _is_known_field_path(field_path: str) -> bool:
     if field_path == 'transaction.destination_country':
+        return True
+    if field_path == 'customer.country':
         return True
     if '.' not in field_path:
         return False
@@ -188,6 +206,20 @@ def _is_known_field_path(field_path: str) -> bool:
     if node_type == 'customer':
         return property_name in CUSTOMER_PROPERTIES
     return False
+
+
+def _effective_kyc_graph_value(graph_value: str | None) -> str | None:
+    if graph_value is None:
+        return None
+
+    normalized = str(graph_value).lower()
+    if normalized in KYC_TIER_VALUES:
+        return None
+
+    if normalized not in KYC_VERIFICATION_STATUSES:
+        return None
+
+    return normalized
 
 
 def _fetch_customer_kyc_status(customer_id: str):
@@ -223,6 +255,16 @@ def _fetch_customer_property_via_transaction(transaction_id: str, property_name:
 def _fetch_destination_country(transaction_id: str):
     results, _ = db.cypher_query(
         DESTINATION_COUNTRY_QUERY,
+        {'transaction_id': transaction_id},
+    )
+    if not results:
+        return None
+    return results[0][0]
+
+
+def _fetch_customer_country(transaction_id: str):
+    results, _ = db.cypher_query(
+        CUSTOMER_COUNTRY_QUERY,
         {'transaction_id': transaction_id},
     )
     if not results:

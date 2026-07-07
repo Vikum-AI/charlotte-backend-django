@@ -1,2 +1,6 @@
 class EvidenceCreationError(Exception):
     ...
+
+
+class EvidenceConfirmationError(Exception):
+    ...

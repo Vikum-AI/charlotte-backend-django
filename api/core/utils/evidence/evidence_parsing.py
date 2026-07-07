@@ -4,6 +4,10 @@ APPROVAL_KEYWORDS = ["approved by", "approval", "approver"]
 KYC_KEYWORDS = ["kyc status", "kyc verification", "verification status"]
 
 EMAIL_PATTERN = r'[\w\.-]+@[\w\.-]+'
+FROM_LINE_EMAIL_PATTERN = re.compile(
+    r'^\s*From:\s*(?:.+?<(?P<bracketed>' + EMAIL_PATTERN + r')>|(?P<plain>' + EMAIL_PATTERN + r'))',
+    re.IGNORECASE | re.MULTILINE,
+)
 DATE_PATTERN = r'\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{4}'
 KYC_STATUS_PATTERN = r'VERIFIED|PENDING|REJECTED'
 
@@ -22,6 +26,18 @@ def find_near_keyword(text: str, keywords: list[str], value_pattern: str, window
 
         if match:
             return match.group()
+
+    return None
+
+
+def extract_approver_email(text: str) -> str | None:
+    email = find_near_keyword(text, APPROVAL_KEYWORDS, EMAIL_PATTERN)
+    if email is not None:
+        return email
+
+    from_match = FROM_LINE_EMAIL_PATTERN.search(text)
+    if from_match is not None:
+        return from_match.group('bracketed') or from_match.group('plain')
 
     return None
 

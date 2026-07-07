@@ -1,5 +1,5 @@
 """
-URL configuration for verity project.
+URL configuration for charlotte project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -14,9 +14,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+from api.core.utils.case_streams import case_graph_stream, case_status_stream
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('cases/<str:case_id>/events/graph', case_graph_stream),
+    path('cases/<str:case_id>/events/graph/', case_graph_stream),
+    path('cases/<str:case_id>/events/status', case_status_stream),
+    path('cases/<str:case_id>/events/status/', case_status_stream),
+    path('', include('api.core.urls')),
+    path('', include('api.urls')),
+    path('api/', include('api.core.urls')),
+    path('api/', include('api.urls')),
 ]

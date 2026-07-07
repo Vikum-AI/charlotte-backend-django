@@ -1,0 +1,89 @@
+[
+  {
+    "model": "core.suggestedevidence",
+    "pk": "kyc_verification_doc",
+    "fields": {
+      "label": "KYC verification document",
+      "description": "Document confirming the customer's KYC status.",
+      "evidence_type": "kyc_status",
+      "file_key": "suggested/kyc-verification-document.pdf",
+      "file_url": "https://ae56mz2f77.ufs.sh/f/ms87B5vduq5hNPHKOwqaZr0TGMgV1qFs6py7QNExhLSmbYUP",
+      "applicable_transaction_ids": [],
+      "field_path": null,
+      "extracted_value": null,
+      "suggested_condition": {
+        "type": "presence",
+        "field": "customer.kyc_status"
+      },
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedevidence",
+    "pk": "admin_approval_email",
+    "fields": {
+      "label": "Admin approval email (Jane Ferreira)",
+      "description": "Approval email from a known admin sender.",
+      "evidence_type": "approval",
+      "file_key": "suggested/admin-approval-email.pdf",
+      "file_url": "https://ae56mz2f77.ufs.sh/f/ms87B5vduq5h8TmDCyRDSadvhFQ6gMc0oXKtC3PsBAZmGUqr",
+      "applicable_transaction_ids": [],
+      "field_path": null,
+      "extracted_value": null,
+      "suggested_condition": {
+        "type": "count",
+        "relationship": "approval",
+        "filter": {
+          "role": "admin"
+        },
+        "op": "gte",
+        "value": 2
+      },
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedevidence",
+    "pk": "second_admin_approval_email",
+    "fields": {
+      "label": "Admin approval email (Marcus Chen)",
+      "description": "A second approval email from a different known admin, needed to reach the 2-admin threshold live.",
+      "evidence_type": "approval",
+      "file_key": "suggested/second-admin-approval-email.pdf",
+      "file_url": "https://ae56mz2f77.ufs.sh/f/ms87B5vduq5h3uNp6vncg4KXVuzyQtRDHY1CUNvWEdesrfSo",
+      "applicable_transaction_ids": [],
+      "field_path": null,
+      "extracted_value": null,
+      "suggested_condition": {
+        "type": "count",
+        "relationship": "approval",
+        "filter": {
+          "role": "admin"
+        },
+        "op": "gte",
+        "value": 2
+      },
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  },
+  {
+    "model": "core.suggestedevidence",
+    "pk": "unknown_sender_approval_email",
+    "fields": {
+      "label": "Unknown sender approval email",
+      "description": "Approval email whose sender cannot be resolved to an authorized approver. Attaching this will never satisfy an approval-count condition on its own.",
+      "evidence_type": "approval",
+      "file_key": "suggested/unknown-sender-approval-email.pdf",
+      "file_url": "https://ae56mz2f77.ufs.sh/f/ms87B5vduq5hSeBDJS8Dc7N5IhS3tzwTXFWJ4RVbkxjgsLHl",
+      "applicable_transaction_ids": [],
+      "field_path": null,
+      "extracted_value": null,
+      "suggested_condition": {},
+      "is_active": true,
+      "created_at": "2026-07-04T00:00:00Z"
+    }
+  }
+]

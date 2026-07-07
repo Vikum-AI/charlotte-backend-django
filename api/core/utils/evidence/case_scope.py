@@ -1,11 +1,12 @@
 from api.core.models import CaseEvidence
 
 
-def attach_evidence(case_id: str, evidence_id: str) -> None:
-    CaseEvidence.objects.get_or_create(
+def attach_evidence(case_id: str, evidence_id: str) -> bool:
+    _, created = CaseEvidence.objects.get_or_create(
         case_id=case_id,
         evidence_id=evidence_id,
     )
+    return created
 
 
 def detach_evidence(case_id: str, evidence_id: str) -> None:

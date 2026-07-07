@@ -6,6 +6,7 @@ from api.core.utils.evidence.exceptions import EvidenceCreationError
 from api.core.utils.evidence.resolvers import (
     MATCHED,
     MISMATCH,
+    PROVISIONAL,
     resolve_approval,
     resolve_custom,
     resolve_kyc_status,
@@ -14,6 +15,7 @@ from api.core.utils.evidence.resolvers import (
 
 def create_approval_evidence(
     evidence_id: str,
+    case_id: str,
     transaction_id: str,
     source_document_id: str,
     source_text: str,
@@ -35,6 +37,7 @@ def create_approval_evidence(
     )
     return _create_evidence(
         evidence_id=evidence_id,
+        case_id=case_id,
         evidence_type='approval',
         transaction_id=transaction_id,
         source_document_id=source_document_id,
@@ -52,6 +55,7 @@ def create_approval_evidence(
 
 def create_kyc_evidence(
     evidence_id: str,
+    case_id: str,
     customer_id: str,
     transaction_id: str,
     source_document_id: str,
@@ -75,6 +79,7 @@ def create_kyc_evidence(
     )
     return _create_evidence(
         evidence_id=evidence_id,
+        case_id=case_id,
         evidence_type='kyc_status',
         transaction_id=transaction_id,
         source_document_id=source_document_id,
@@ -92,6 +97,7 @@ def create_kyc_evidence(
 
 def create_custom_evidence(
     evidence_id: str,
+    case_id: str,
     transaction_id: str,
     field_path: str,
     source_document_id: str,
@@ -114,6 +120,7 @@ def create_custom_evidence(
     )
     return _create_evidence(
         evidence_id=evidence_id,
+        case_id=case_id,
         evidence_type='custom',
         transaction_id=transaction_id,
         source_document_id=source_document_id,
@@ -130,7 +137,7 @@ def create_custom_evidence(
 
 
 def _build_payload(result, raw_fields: dict) -> dict:
-    if result.status in (MATCHED, MISMATCH) and result.resolved_payload is not None:
+    if result.status in (MATCHED, MISMATCH, PROVISIONAL) and result.resolved_payload is not None:
         return result.resolved_payload
     return {key: value for key, value in raw_fields.items() if value is not None}
 
@@ -138,6 +145,7 @@ def _build_payload(result, raw_fields: dict) -> dict:
 def _create_evidence(
     *,
     evidence_id: str,
+    case_id: str,
     evidence_type: str,
     transaction_id: str,
     source_document_id: str,
@@ -161,6 +169,7 @@ def _create_evidence(
     try:
         evidence = Evidence(
             evidence_id=evidence_id,
+            case_id=case_id,
             evidence_type=evidence_type,
             extracted_at=timezone.now(),
             confidence=confidence,
