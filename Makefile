@@ -52,7 +52,12 @@ dev:
 	$(MANAGE) runserver $(DEV_PORT)
 
 run:
-	$(POETRY) run gunicorn charlotte.wsgi:application --bind 127.0.0.1:$(GUNICORN_PORT)
+	$(POETRY) run gunicorn charlotte.wsgi:application \
+	  --bind 127.0.0.1:$(GUNICORN_PORT) \
+	  --worker-class gevent \
+	  --workers 1 \
+	  --timeout 0 \
+	  --graceful-timeout 30
 
 shell:
 	@echo "Starting poetry shell. Press Ctrl-d to exit."
