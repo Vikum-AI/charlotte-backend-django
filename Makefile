@@ -1,4 +1,4 @@
-.PHONY: all installdeps install createmigrations migrate adminuser dev run shell test \
+.PHONY: all installdeps install createmigrations migrate seed-sqlite adminuser dev run shell test \
 	neo4j-labels seed-neo4j backfill-customers backfill-transactions backfill-transactions-dry-run startworker
 
 POETRY := poetry
@@ -12,6 +12,7 @@ all:
 	@echo "  make createmigrations         Generate Django migrations"
 	@echo "  make install                  installdeps + createmigrations"
 	@echo "  make migrate                  Apply migrations"
+	@echo "  make seed-sqlite              Migrate + load fixtures + seed demo approvers"
 	@echo "  make adminuser                Create Django superuser (email login)"
 	@echo "  make dev                      Run dev server (port $(DEV_PORT))"
 	@echo "  make run                      Run gunicorn (port $(GUNICORN_PORT))"
@@ -39,6 +40,10 @@ install: installdeps createmigrations
 
 migrate:
 	$(MANAGE) migrate
+
+seed-sqlite: migrate
+	$(MANAGE) loaddata suggested_evidence suggested_subrules
+	$(MANAGE) seed_demo_approvers
 
 adminuser:
 	$(MANAGE) createsuperuser

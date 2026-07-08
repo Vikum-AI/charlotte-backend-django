@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ViewSet
 
-from api.core.models import Case, CaseRule, SuggestedEvidence, SuggestedSubRule
+from api.core.models import Case, CaseRule, EvidenceType, SuggestedEvidence, SuggestedSubRule
 from api.core.serializers import (
     AddSuggestedEvidenceSerializer,
     CaseCreateSerializer,
@@ -292,7 +292,7 @@ class AddSuggestedEvidenceViewSet(GenericViewSet):
         if not is_suggested_evidence_applicable(suggested, case):
             raise Http404(f"Suggested evidence '{suggested.id}' not found")
 
-        if suggested.evidence_type == SuggestedEvidence.EvidenceType.CUSTOM:
+        if suggested.evidence_type == EvidenceType.CUSTOM:
             if not suggested.field_path or suggested.extracted_value is None:
                 return Response(
                     {
